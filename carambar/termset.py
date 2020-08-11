@@ -2,7 +2,7 @@ import os
 import io
 from contextlib import contextmanager
 from functools import partial
-from typing import Optional, Union, Callable
+from .typing import Optional, Union, Callable
 
 from . import seq
 
