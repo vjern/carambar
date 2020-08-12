@@ -4,6 +4,7 @@ import time
 
 sys.path.append('..')
 from carambar.carambar import CaramBar
+from carambar.mtest import Test
 
 
 def test_format():
@@ -19,11 +20,14 @@ def test_format():
 
     obj = A()
 
-    with CaramBar(obj, color='103;95', update_every=1) as cb:
-    # with CaramBar(A).
-        for idx, i in enumerate('abcdef'):
-            print(i)
-            time.sleep(1)
+    with Test(
+        '!print some letters while showing !{a random sequence} '
+        'of letters !{every 1 second} at the bottom of the terminal'
+    ):
+        with CaramBar(obj, color='103;95', update_every=1) as cb:
+            for idx, i in enumerate('abcdef'):
+                print(i)
+                time.sleep(1)
 
 if __name__ == "__main__":
     test_format()
