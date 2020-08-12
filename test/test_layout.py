@@ -27,7 +27,33 @@ def test_layout():
 
     print(my_display)
 
-    print('{:<100}'.format(my_display))
+    result = ('{:<100}'.format(my_display))
+    assert result == '1:Hello!:there', result
+
+    #
+
+    my_display = (
+        fmt.Layout(sep=':')
+        .field(align=fmt.LEFT, pack=fmt.ASIS, src=get_temperature)
+        .field(align=fmt.MIDDLE, pack=20, src=get_message)
+        .field(align=fmt.LEFT, pack=fmt.ASIS, src=get_remaining_info)
+    )
+
+    fmt.RawLayout(
+        '{temp:<30}:{msg:^*}:{info:<}',
+        callers={
+            'temp': get_temperature,
+            'msg': get_message,
+            'info': get_remaining_info
+        }
+    )
+
+    print(my_display)
+
+    result = ('{:<100}'.format(my_display))
+    assert result == '1:       Hello!       :there', result
+
+
 
 
 if __name__ == "__main__":

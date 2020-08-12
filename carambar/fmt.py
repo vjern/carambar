@@ -5,6 +5,12 @@ LEFT, MIDDLE, RIGHT = '<^>'
 ASIS, FIT = 0, '*'
 
 
+class RawLayout:
+
+    def __init__(self, *a, **kw):
+        pass
+
+
 class Layout:
 
     def __init__(self, sep: str = ' '):

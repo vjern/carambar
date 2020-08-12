@@ -1,14 +1,11 @@
-# Carambar
+# CaramBar
 
 ## tqdm Integration
 
-This should just require a drop-in replacement:
+This should just be a drop-in replacement:
 
 ```py
-from tqdm import tqdm
-# becomes
 from carambar import tqdm
-
 
 for item in tqdm(items):
     ...
@@ -55,13 +52,10 @@ Composing a display:
 from carambar import fmt
 
 my_display = (
-    fmt.Layout(sep=' | ')
-    .field('<30', src=get_temperature)
-    # .field(align=fmt.LEFT, pack=fmt.block(30))
-    .field('^*', src=get_message)
-    # .field(align=fmt.MIDDLE, pack=fmt.GAS | fmt.FIT)
-    .field('<.', src=get_remaining_info)
-    # .field(align=fmt.RIGHT, pack=fmt.LIQUID | fmt.ASIS)
+    fmt.Layout(sep=':')
+    .field(align=fmt.LEFT, pack=fmt.ASIS, src=get_temperature)
+    .field(align=fmt.MIDDLE, pack=fmt.ASIS, src=get_message)
+    .field(align=fmt.LEFT, pack=fmt.ASIS, src=get_remaining_info)
 )
 
 with CaramBar(my_display):

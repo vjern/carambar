@@ -3,6 +3,7 @@ import time
 
 
 sys.path.append('..')
+from carambar.carambar import CaramBar
 from carambar.itqdm import tqdm
 
 
@@ -13,7 +14,10 @@ def test_itqdm():
         for item in range(100)
     )
 
-    for item in tqdm(items, total=100):
+    # for item in tqdm(items, total=100):
+    #     print(item)
+
+    for item in items | CaramBar('Doing stuff'):
         print(item)
 
 

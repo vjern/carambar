@@ -9,11 +9,9 @@ from carambar.lineio import LineIO
 
 def test_carambar():
 
-    with CaramBar() as cb:
+    with CaramBar():
         for idx, i in enumerate('abcdef'):
             print(i)
-            # cb._text = i
-            # cb.print()
             time.sleep(1)
 
 
@@ -44,7 +42,6 @@ def test_carambar_io():
         leo = cb.mio
         for idx, i in enumerate('124537'):
             print(i)
-            # cb.set_text(f'{idx}it')
             leo.write(str(idx))
             leo.flush()
             time.sleep(1)
@@ -53,6 +50,6 @@ def test_carambar_io():
 
 
 if __name__ == "__main__":
-    # test_carambar()
+    test_carambar()
     # test_carambar_set_text()
-    test_carambar_io()
+    # test_carambar_io()

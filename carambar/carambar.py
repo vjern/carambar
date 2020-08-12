@@ -19,7 +19,7 @@ class CaramBar:
 
     def __init__(
         self,
-        text: SupportsFormat = '<3',
+        text: SupportsFormat = '===',
         file: io.TextIOBase = sys.stderr,
         medium_io: lineio.LineIO = None,
         leave: bool = False,
@@ -44,9 +44,9 @@ class CaramBar:
         mio = lineio.LineIO()
         return cls(*a, medium_io=mio, **kw), mio
 
-    def set_io(self, fio: io.TextIOBase):
-        self.file = fio
-        self.get_terminal_size = termset.build_sizer(fio)
+    def set_io(self, file: io.TextIOBase):
+        self.file = file
+        self.get_terminal_size = termset.build_sizer(file)
         self.termsize = self.get_terminal_size()
         self._hide_cursor = True
 
@@ -131,3 +131,11 @@ class CaramBar:
             self.file.write(self.printable_text)
 
         self.file.flush()
+
+    def iter(self, gen):
+        with self:
+            yield from gen
+
+    __ror__ = iter
+    
+# TODO + Add handlers for the various signals (SIGWINCH, SIGINT, SIGTERM, etc.)

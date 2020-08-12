@@ -1,9 +1,10 @@
 from .carambar import CaramBar
+from . import termset
 import os
 
 
 def _get_cols(fp): 
-    return os.get_terminal_size(0).columns
+    return termset.get_terminal_size().columns
 
 
 def tqdm(*args, **kwargs):
@@ -16,18 +17,23 @@ def tqdm(*args, **kwargs):
     if 'file' in kwargs:
         return tqdm.tqdm(*args, **kwargs)
 
-    else:
+    color = None
+    if 'color' in kwargs:
+        color = kwargs.pop('color')
 
-        print_leftovers = kwargs.get('leave')
-        
-        ctx, iostream = CaramBar.withIO(
-            leave=print_leftovers
-        )
-        
-        kwargs['file'] = iostream
-        # kwargs['ncols'] = kwargs.get('ncols') or get_terminal_size().columns
-        kwargs['dynamic_ncols'] = True
+    print_leftovers = kwargs.get('leave')
+    
+    ctxb, iostream = CaramBar.withIO(
+        leave=print_leftovers,
+        color=color
+    )
+    
+    kwargs.update({
+        'file': iostream,
+        'dynamic_ncols': True,
+        'leave': print_leftovers
+    })
 
-        with ctx:
-            tqobj = tqdm.tqdm(*args, leave=True, **kwargs)
-            yield from tqobj
+    with ctxb:
+        tqobj = tqdm.tqdm(*args, **kwargs)
+        yield from tqobj
