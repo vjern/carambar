@@ -16,7 +16,6 @@ class LineIO(io.TextIOBase):  # or Wrapper ?
         self.delimiter = delimiter
 
     def write(self, text: str):
-        # + handle carriage return;
         text = self.buffer + text
         text = text.split(self.delimiter)[-self.size:]
         text = self.delimiter.join(text)
@@ -32,3 +31,9 @@ class LineIO(io.TextIOBase):  # or Wrapper ?
 
     def getvalue(self):
         return self.buffer
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *a):
+        print('__exit__')

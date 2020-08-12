@@ -20,11 +20,11 @@ def tqdm(*args, **kwargs):
 
         print_leftovers = kwargs.get('leave')
         
-        ctx = CaramBar.withIO(
+        ctx, iostream = CaramBar.withIO(
             leave=print_leftovers
         )
         
-        kwargs['file'] = ctx.mio
+        kwargs['file'] = iostream
         # kwargs['ncols'] = kwargs.get('ncols') or get_terminal_size().columns
         kwargs['dynamic_ncols'] = True
 

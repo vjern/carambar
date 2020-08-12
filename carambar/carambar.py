@@ -1,46 +1,66 @@
 import sys
 import io
 import os
+import time
 from functools import partial
-# from typing import SupportsFormat
-SupportsFormat = object()
+from .typing import SupportsFormat  # does not exist
+# SupportsFormat = object()
 
 from . import termset
 from . import seq
 from . import lineio
+from . import thread
 
 
 class CaramBar:
 
+    # file: io.TextIOBase
+    # text: SupportsFormat
+
     def __init__(
         self,
-        fio: io.IOBase = sys.stderr,
-        text: str = '<3',
+        text: SupportsFormat = '<3',
+        file: io.TextIOBase = sys.stderr,
         medium_io: lineio.LineIO = None,
-        leave: bool = False
+        leave: bool = False,
+        update_every: float = None,
+        color: str = None
     ):
-        self.set_io(fio)
+        self.set_io(file)
         self.set_medium_io(medium_io)
         self.text = text
         self.leave = leave
 
+        if update_every is not None and update_every <= 0:
+            raise ValueError('Invalid dynamic update delay: %s' % update_every)
+
+        self._dynamic_update_on = update_every is not None
+        self._dynamic_update_delay = update_every
+
+        self.color = color
+
     @classmethod
     def withIO(cls, *a, **kw):
-        return cls(*a, medium_io=lineio.LineIO(), **kw)
+        mio = lineio.LineIO()
+        return cls(*a, medium_io=mio, **kw), mio
 
-    def set_io(self, fio: io.IOBase):
-        self.io = fio
+    def set_io(self, fio: io.TextIOBase):
+        self.file = fio
         self.get_terminal_size = termset.build_sizer(fio)
         self.termsize = self.get_terminal_size()
         self._hide_cursor = True
 
-    def set_medium_io(self, medium_io):
+    def set_medium_io(self, medium_io: lineio.LineIO):
         self.medium_io = medium_io
         if medium_io is None:
             return
         self.text = medium_io.getvalue()
-        # self.medium_io = lineio.LineIO(callback=import_fable)
         self.medium_io.callback = self.set_text
+
+    def loop(self, every: float):
+        while self._dynamic_update_on:
+            self.print()
+            time.sleep(every)
 
     def set_text(self, text: str):
         self.text = text
@@ -50,44 +70,52 @@ class CaramBar:
 
         # Hide cursor
         if self._hide_cursor:
-            termset.hide_cursor(self.io)
+            termset.hide_cursor(self.file)
 
         # Setup sroll region to exclude last row
-        termset.set_scroll_region(self.termsize.lines, self.io)
+        termset.set_scroll_region(self.termsize.lines, self.file)
 
         # Print content text
-        self.print()
+        if self._dynamic_update_on:
+            # Run 'self.loop' in thread
+            thread.new(self.loop, self._dynamic_update_delay)
+        else:
+            self.print()
 
         return self
 
     def __exit__(self, *a):
 
+        self._dynamic_update_on = False
+
         # Reset scroll region
-        termset.set_scroll_region(self.termsize.lines + 1, self.io)
+        termset.set_scroll_region(self.termsize.lines + 1, self.file)
 
         # Erase terminal after & below cursor
-        self.io.write( seq.Erase.BELOW_AFTER )
+        self.file.write( seq.Erase.BELOW_AFTER )
 
         # Make cursor visible again if it was hidden
         if self._hide_cursor:
-            termset.show_cursor(self.io)
+            termset.show_cursor(self.file)
 
         # Print last version of content
         if self.leave:
-            self.io.write(self.text)
+            self.file.write(self.text)
 
-        self.io.flush()
+        self.file.flush()
 
     @property
     def printable_text(self):
-        return (
-            ''
-            # + seq.Color.ANSII.format(7)
-            + ('{:<%s}' % self.termsize.columns).format(self.text)
-            # + seq.Color.ANSII.format(0)
-        )
+
+        relu = ('{:<%s}' % self.termsize.columns).format(self.text)
+
+        if self.color is not None:
+            relu = seq.Color.ANSII.format(self.color) + relu + seq.Color.ANSII.format(0)
+
+        return relu
 
     def print(self):
+        
         """
         Prints the context bar.
 
@@ -98,8 +126,8 @@ class CaramBar:
 
         pos = self.termsize.lines, 0
 
-        with termset.ancurs(self.io):
-            termset.move_cursor_to(*pos, fio=self.io)
-            self.io.write(self.printable_text)
+        with termset.ancurs(self.file):
+            termset.move_cursor_to(*pos, fio=self.file)
+            self.file.write(self.printable_text)
 
-        self.io.flush()
+        self.file.flush()

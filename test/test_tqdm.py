@@ -3,8 +3,6 @@ import time
 
 
 sys.path.append('..')
-from carambar.carambar import CaramBar
-from carambar.lineio import LineIO
 from carambar.itqdm import tqdm
 
 
