@@ -54,7 +54,5 @@ def test_layout():
     assert result == '1:       Hello!       :there', result
 
 
-
-
 if __name__ == "__main__":
     test_layout()

@@ -92,7 +92,7 @@ class CaramBar:
         termset.set_scroll_region(self.termsize.lines + 1, self.file)
 
         # Erase terminal after & below cursor
-        self.file.write( seq.Erase.BELOW_AFTER )
+        self.file.write(seq.Erase.BELOW_AFTER)
 
         # Make cursor visible again if it was hidden
         if self._hide_cursor:
@@ -100,14 +100,15 @@ class CaramBar:
 
         # Print last version of content
         if self.leave:
-            self.file.write(self.text)
+            self.file.write(self.text + '\n')
 
         self.file.flush()
 
     @property
     def printable_text(self):
 
-        relu = ('{:<%s}' % self.termsize.columns).format(self.text)
+        relu = '{:<%s}' % self.termsize.columns
+        relu = relu.format(self.text)
 
         if self.color is not None:
             relu = seq.Color.ANSII.format(self.color) + relu + seq.Color.ANSII.format(0)

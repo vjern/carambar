@@ -2,17 +2,29 @@ import io
 from .typing import Optional, Callable
 
 
-class LineIO(io.TextIOBase):  # or Wrapper ?
+class LineIO(io.TextIOBase):
 
-    # encoding: str = 'utf-8'
-    # _isatty: bool = True
-    _isatty = True
+    """
+    IO-like interface that only keeps track of the last n lines of its buffer.
+
+    :param size: The number of lines to keep in memory.
+    :param callback: When flushing, the available lines are sent to the callback function.
+    :param delimiter: Line delimiter.
+
+    """
+
+    _isatty = False
     encoding = 'utf-8'
 
-    def __init__(self, size: int = 1, callback: Optional[Callable] = None, delimiter: str = '\n'):
+    def __init__(
+        self,
+        size: int = 1,
+        callback: Optional[Callable] = None,
+        delimiter: str = '\n'
+    ):
         self.size = size
         self.buffer = ''
-        self.callback = callback
+        self.callback = callback or (lambda *a: None)
         self.delimiter = delimiter
 
     def write(self, text: str):
@@ -26,10 +38,10 @@ class LineIO(io.TextIOBase):  # or Wrapper ?
         self.callback(self.buffer)
         self.buffer = ''
 
-    def isatty(self):
+    def isatty(self) -> bool:
         return self._isatty
 
-    def getvalue(self):
+    def getvalue(self) -> str:
         return self.buffer
 
     def __enter__(self):

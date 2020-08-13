@@ -11,16 +11,10 @@ map = TPE.map
 
 def alerter(f):
     @wraps(f)
-    def wrapper():
+    def wrapper(*a, **kw):
         try:
-            return f()
+            return f(*a, **kw)
         except Exception as e:
-            # print(
-            #     'Exception raised in thread %s:' % threading.get_ident(),
-            #     type(e).__qualname__,
-            #     e,
-            #     file=sys.stderr
-            # )
             traceback.print_exc(file=sys.stderr)
             raise
     return wrapper
