@@ -22,6 +22,7 @@ class CaramBar:
         text: SupportsFormat = '===',
         file: io.TextIOBase = sys.stderr,
         medium_io: lineio.LineIO = None,
+        height: int = 1,
         leave: bool = False,
         update_every: float = None,
         color: str = None
@@ -30,6 +31,7 @@ class CaramBar:
         self.set_medium_io(medium_io)
         self.text = text
         self.leave = leave
+        self.height = height
 
         if update_every is not None and update_every <= 0:
             raise ValueError('Invalid dynamic update delay: %s' % update_every)
@@ -73,7 +75,7 @@ class CaramBar:
             termset.hide_cursor(self.file)
 
         # Setup sroll region to exclude last row
-        termset.set_scroll_region(self.termsize.lines, self.file)
+        termset.set_scroll_region(self.termsize.lines - self.height + 1, self.file)
 
         # Print content text
         if self._dynamic_update_on:
