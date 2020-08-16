@@ -38,7 +38,7 @@ def test_carambar_set_text():
             
 def test_carambar_io():
 
-    cb, leo = CaramBar.withIO(leave=True)
+    cb, leo = CaramBar.with_io(leave=True)
 
     with Test(
         'iter through items while !{display}ing the !{iter index} !below !{using medium io}',

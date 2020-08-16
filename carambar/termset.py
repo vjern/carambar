@@ -6,17 +6,18 @@ from .typing import Optional, Union, Callable
 
 from . import seq
 
+
 """
 Compilation of terminal operations.
 """
 
 
-def hide_cursor(file: io.IOBase):
+def hide_cursor(file: io.TextIOBase):
     """Hide terminal cursor."""
     file.write(seq.Cursor.HIDE)
 
 
-def show_cursor(file: io.IOBase):
+def show_cursor(file: io.TextIOBase):
     """Unhide terminal cursor."""
     file.write(seq.Cursor.SHOW)
 
@@ -33,14 +34,14 @@ def is_suitable_io_device(fileno: int) -> bool:
         return False
 
 
-def build_sizer(fd: Optional[Union[io.IOBase, int]] = None) -> Callable:
+def build_sizer(fd: Optional[Union[io.TextIOBase, int]] = None) -> Callable:
     """
     Build a function returning the terminal size depending on the available
     and requested I/O streams.
     Try to get the terminal size of the given io stream, otherwise defaults to stdin,
     and if stdin is no tty, defaults to a fixed size of (80, 24).
     """
-    if isinstance(fd, io.IOBase):
+    if isinstance(fd, io.TextIOBase):
         fd = fd.fileno()
     if type(fd) is int:
         if is_suitable_io_device(fd):
@@ -54,23 +55,24 @@ def build_sizer(fd: Optional[Union[io.IOBase, int]] = None) -> Callable:
 get_terminal_size = build_sizer(2)
 
 
-def move_cursor_to(x: int, y: int, fio: io.IOBase):
+def move_cursor_to(x: int, y: int, file: io.TextIOBase):
     """Move cursor to specified position inside the terminal window."""
-    fio.write(seq.Cursor.MOVE_TO.format(x=x, y=y))
+    file.write(seq.Cursor.MOVE_TO.format(x=x, y=y))
 
 
 @contextmanager
-def ancurs(fio: io.IOBase):
+def ancurs(file: io.TextIOBase):
     """Remember cursor position on entry, then moves cursor back to said position on exit."""
-    fio.write(seq.Cursor.BIND)
+    file.write(seq.Cursor.BIND)
     yield
-    fio.write(seq.Cursor.UNBIND)
+    file.write(seq.Cursor.UNBIND)
 
 
-def set_scroll_region(nrows: int, fio: io.IOBase):
+def set_scroll_region(nrows: int, file: io.TextIOBase):
     """Set terminal scroll region sizein terms of rows."""
-    fio.write('\n')
-    with ancurs(fio):
-        fio.write(seq.ScrollRegion.SET.format(0, nrows - 1))
-    fio.write(seq.Cursor.goes.UP)
-    fio.flush()
+    print('Set scroll region to', nrows)
+    file.write('\n')
+    with ancurs(file):
+        file.write(seq.ScrollRegion.SET.format(0, nrows - 1))
+    file.write(seq.Cursor.goes.UP)
+    file.flush()

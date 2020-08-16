@@ -54,5 +54,14 @@ def test_layout():
     assert result == '1:       Hello!       :there', result
 
 
+def test_raw_layout():
+    rlay = fmt.RawLayout(
+        '{temp:<30}:{msg:^*}:{info:<}',
+        temp=get_temperature,
+        msg=get_message,
+        info=get_remaining_info
+    )
+
+
 if __name__ == "__main__":
     test_layout()

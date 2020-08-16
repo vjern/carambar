@@ -3,7 +3,7 @@ import io
 import os
 import time
 from functools import partial
-from .typing import SupportsFormat  # does not exist
+from .typing import SupportsFormat, Optional  # does not exist
 # SupportsFormat = object()
 
 from . import termset
@@ -14,24 +14,23 @@ from . import thread
 
 class CaramBar:
 
-    # file: io.TextIOBase
-    # text: SupportsFormat
-
     def __init__(
         self,
         text: SupportsFormat = '===',
         file: io.TextIOBase = sys.stderr,
-        medium_io: lineio.LineIO = None,
+        medium_io: Optional[lineio.LineIO] = None,
         height: int = 1,
         leave: bool = False,
-        update_every: float = None,
-        color: str = None
+        update_every: Optional[float] = None,
+        color: Optional[str] = None,
+        hide_cursor: bool = True
     ):
         self.set_io(file)
         self.set_medium_io(medium_io)
         self.text = text
         self.leave = leave
         self.height = height
+        self.hide_cursor = hide_cursor
 
         if update_every is not None and update_every <= 0:
             raise ValueError('Invalid dynamic update delay: %s' % update_every)
@@ -39,10 +38,11 @@ class CaramBar:
         self._dynamic_update_on = update_every is not None
         self._dynamic_update_delay = update_every
 
-        self.color = color
+        color = seq.Color.reduce(color)
+        self.color = seq.Color.ANSII.format(color)
 
     @classmethod
-    def withIO(cls, *a, **kw):
+    def with_io(cls, *a, **kw):
         mio = lineio.LineIO()
         return cls(*a, medium_io=mio, **kw), mio
 
@@ -50,7 +50,7 @@ class CaramBar:
         self.file = file
         self.get_terminal_size = termset.build_sizer(file)
         self.termsize = self.get_terminal_size()
-        self._hide_cursor = True
+        # self.hide_cursor = True
 
     def set_medium_io(self, medium_io: lineio.LineIO):
         self.medium_io = medium_io
@@ -71,7 +71,7 @@ class CaramBar:
     def __enter__(self):
 
         # Hide cursor
-        if self._hide_cursor:
+        if self.hide_cursor:
             termset.hide_cursor(self.file)
 
         # Setup sroll region to exclude last row
@@ -97,7 +97,7 @@ class CaramBar:
         self.file.write(seq.Erase.BELOW_AFTER)
 
         # Make cursor visible again if it was hidden
-        if self._hide_cursor:
+        if self.hide_cursor:
             termset.show_cursor(self.file)
 
         # Print last version of content
@@ -113,7 +113,7 @@ class CaramBar:
         relu = relu.format(self.text)
 
         if self.color is not None:
-            relu = seq.Color.ANSII.format(self.color) + relu + seq.Color.ANSII.format(0)
+            relu = self.color + relu + seq.Color.ANSII.format(0)
 
         return relu
 

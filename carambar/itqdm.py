@@ -1,9 +1,9 @@
-from .carambar import CaramBar
+from . carambar import CaramBar
 from . import termset
 import os
 
 
-def _get_cols(fp): 
+def _get_cols(fp: int) -> int: 
     return termset.get_terminal_size().columns
 
 
@@ -23,7 +23,7 @@ def tqdm(*args, **kwargs):
 
     print_leftovers = kwargs.get('leave')
     
-    ctxb, iostream = CaramBar.withIO(
+    ctxb, iostream = CaramBar.with_io(
         leave=print_leftovers,
         color=color
     )

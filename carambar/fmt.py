@@ -7,8 +7,9 @@ ASIS, FIT = 0, '*'
 
 class RawLayout:
 
-    def __init__(self, *a, **kw):
-        pass
+    def __init__(self, fmtstr: str, **kw):
+        self.fmt = fmtstr
+        self.ames = kw
 
 
 class Layout:
