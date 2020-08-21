@@ -9,7 +9,7 @@ def _get_cols(fp: int) -> int:
 
 def tqdm(*args, **kwargs):
 
-    import tqdm
+    import tqdm  # type: ignore
 
     # To enable tqdm dynamic resizing
     tqdm._tqdm._environ_cols_wrapper = lambda: _get_cols
