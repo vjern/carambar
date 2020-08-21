@@ -1,8 +1,7 @@
 import os
-import io
 from contextlib import contextmanager
 from functools import partial
-from typing import Optional, Union, Callable
+from typing import Optional, Union, Callable, TextIO
 
 from . import seq
 
@@ -12,12 +11,12 @@ Compilation of terminal operations.
 """
 
 
-def hide_cursor(file: io.TextIOBase):
+def hide_cursor(file: TextIO):
     """Hide terminal cursor."""
     file.write(seq.Cursor.HIDE)
 
 
-def show_cursor(file: io.TextIOBase):
+def show_cursor(file: TextIO):
     """Unhide terminal cursor."""
     file.write(seq.Cursor.SHOW)
 
@@ -34,7 +33,7 @@ def is_suitable_io_device(fileno: int) -> bool:
         return False
 
 
-def build_sizer(fd: Optional[Union[io.TextIOBase, int]] = None) -> Callable:
+def build_sizer(fd: Optional[Union[TextIO, int]] = None) -> Callable:
     """
     Build a function returning the terminal size depending on the available
     and requested I/O streams.
@@ -45,7 +44,7 @@ def build_sizer(fd: Optional[Union[io.TextIOBase, int]] = None) -> Callable:
         if os.isatty(0):
             return partial(os.get_terminal_size, 0)
     else:
-        if isinstance(fd, io.TextIOBase):
+        if isinstance(fd, TextIO):
             fd = fd.fileno()
         if type(fd) is int:
             if is_suitable_io_device(fd):
@@ -57,20 +56,20 @@ def build_sizer(fd: Optional[Union[io.TextIOBase, int]] = None) -> Callable:
 get_terminal_size = build_sizer(2)
 
 
-def move_cursor_to(x: int, y: int, file: io.TextIOBase):
+def move_cursor_to(x: int, y: int, file: TextIO):
     """Move cursor to specified position inside the terminal window."""
     file.write(seq.Cursor.MOVE_TO.format(x=x, y=y))
 
 
 @contextmanager
-def ancurs(file: io.TextIOBase):
+def ancurs(file: TextIO):
     """Remember cursor position on entry, then moves cursor back to said position on exit."""
     file.write(seq.Cursor.BIND)
     yield
     file.write(seq.Cursor.UNBIND)
 
 
-def set_scroll_region(nrows: int, file: io.TextIOBase):
+def set_scroll_region(nrows: int, file: TextIO):
     """Set terminal scroll region sizein terms of rows."""
     print('Set scroll region to', nrows)
     file.write('\n')

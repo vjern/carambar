@@ -20,6 +20,7 @@ def get_default_answer(ans: str) -> Optional[str]:
     for a in ans:
         if a == a.upper():
             return a
+    return None
 
 
 def parse_action(action: str) -> Tuple[str, List[str]]:
@@ -28,12 +29,13 @@ def parse_action(action: str) -> Tuple[str, List[str]]:
     multi_token_rgx = r'!\{(.*?)\}'
 
     keywords: List[str] = []
+    keyword_occs: List[Tuple[str, int]] = []
 
-    keywords.extend((r.group(1), r.span()[0]) for r in re.finditer(single_token_rgx, action))
-    keywords.extend((r.group(1), r.span()[0]) for r in re.finditer(multi_token_rgx, action))
-    keywords = sorted(keywords, key = lambda pair: pair[1])
-    if keywords:
-        keywords, _ = zip(*keywords)
+    keyword_occs.extend((r.group(1), r.span()[0]) for r in re.finditer(single_token_rgx, action))
+    keyword_occs.extend((r.group(1), r.span()[0]) for r in re.finditer(multi_token_rgx, action))
+    keyword_occs = sorted(keyword_occs, key = lambda pair: pair[1])
+    if keyword_occs:
+        keywords, _ = zip(*keyword_occs)
 
     text = action
     text = re.sub(single_token_rgx, r'\1', text)
@@ -65,7 +67,7 @@ def prompt(msg: str, ans: str = '') -> Optional[str]:
     user_ans = input(user_msg).strip()
 
     if not ans:
-        return
+        return None
         
     default_answer = get_default_answer(ans)
 

@@ -29,8 +29,8 @@ class Layout:
 
     def __format__(self, fmt: str) -> str:
         size = int(fmt[1:])
-        fields = [dict(f) for f in self.fields]
-        fit_fields: Dict[str, Any] = []
+        fields:     List[Dict[str, Any]] = [dict(f) for f in self.fields]
+        fit_fields: List[Dict[str, Any]] = []
         remaining_size = size
         for field in fields:
             if field['text'] is not None:

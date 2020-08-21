@@ -1,9 +1,8 @@
 import sys
-import io
 import os
 import time
 from functools import partial
-from typing import Any, Optional
+from typing import Any, Optional, TextIO
 
 from . import termset
 from . import seq
@@ -16,7 +15,7 @@ class CaramBar:
     def __init__(
         self,
         text: Any = '===',
-        file: io.TextIOBase = sys.stderr,
+        file: TextIO = sys.stderr,
         medium_io: Optional[lineio.LineIO] = None,
         height: int = 1,
         leave: bool = False,
@@ -47,7 +46,7 @@ class CaramBar:
         mio = lineio.LineIO()
         return cls(*a, medium_io=mio, **kw), mio
 
-    def set_io(self, file: io.TextIOBase):
+    def set_io(self, file: TextIO):
         self.file = file
         self.get_terminal_size = termset.build_sizer(file)
         self.termsize = self.get_terminal_size()
@@ -55,9 +54,10 @@ class CaramBar:
 
     def set_medium_io(self, medium_io: Optional[lineio.LineIO]):
         self.medium_io = medium_io
-        if medium_io is None:
+        if self.medium_io is None:
             return
         self.text = medium_io.getvalue()
+        # if self.medium_io is not None:  # Thanks mypy ... Never heard of branches in code ?
         self.medium_io.callback = self.set_text
 
     def loop(self, every: float):
