@@ -41,14 +41,16 @@ def build_sizer(fd: Optional[Union[io.TextIOBase, int]] = None) -> Callable:
     Try to get the terminal size of the given io stream, otherwise defaults to stdin,
     and if stdin is no tty, defaults to a fixed size of (80, 24).
     """
-    if isinstance(fd, io.TextIOBase):
-        fd = fd.fileno()
-    if type(fd) is int:
-        if is_suitable_io_device(fd):
-            return partial(os.get_terminal_size, fd)
-        return partial(os.get_terminal_size, 0)
-    if fd is None and os.isatty(0):
-        return partial(os.get_terminal_size, 0)
+    if fd is None:
+        if os.isatty(0):
+            return partial(os.get_terminal_size, 0)
+    else:
+        if isinstance(fd, io.TextIOBase):
+            fd = fd.fileno()
+        if type(fd) is int:
+            if is_suitable_io_device(fd):
+                return partial(os.get_terminal_size, fd)
+            return partial(os.get_terminal_size, 0)
     return lambda: os.terminal_size((80, 24))
 
 

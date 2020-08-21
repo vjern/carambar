@@ -2,6 +2,7 @@ import re
 import textwrap
 import traceback
 from contextlib import contextmanager
+from typing import Optional, Tuple, List
 
 
 """
@@ -15,13 +16,13 @@ then asking the user to confirm whether the test has completed succesfully.
 """
 
 
-def get_default_answer(ans: str) -> str:
+def get_default_answer(ans: str) -> Optional[str]:
     for a in ans:
         if a == a.upper():
             return a
 
 
-def parse_action(action: str) -> (str, list):
+def parse_action(action: str) -> Tuple[str, List[str]]:
 
     single_token_rgx = r'!([a-zA-Z0-9_-]+)'
     multi_token_rgx = r'!\{(.*?)\}'
@@ -38,8 +39,7 @@ def parse_action(action: str) -> (str, list):
     text = re.sub(single_token_rgx, r'\1', text)
     text = re.sub(multi_token_rgx, r'\1', text)
 
-    text = textwrap.wrap(text, width=50)
-    text = '\n  '.join(text)
+    text = '\n  '.join(textwrap.wrap(text, width=50))
 
     return text, keywords
 

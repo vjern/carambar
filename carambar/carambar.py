@@ -3,7 +3,7 @@ import io
 import os
 import time
 from functools import partial
-from typing import Any, Optional  # does not exist
+from typing import Any, Optional
 
 from . import termset
 from . import seq
@@ -21,7 +21,7 @@ class CaramBar:
         height: int = 1,
         leave: bool = False,
         update_every: Optional[float] = None,
-        color: Optional[str] = None,
+        color: str = '',
         hide_cursor: bool = True
     ):
         self.set_io(file)
@@ -37,8 +37,10 @@ class CaramBar:
         self._dynamic_update_on = update_every is not None
         self._dynamic_update_delay = update_every
 
-        color = seq.Color.reduce(color)
-        self.color = seq.Color.ANSII.format(color)
+        if color:
+            color = seq.Color.reduce(color)
+            color = seq.Color.ANSII.format(color)
+        self.color = color
 
     @classmethod
     def with_io(cls, *a, **kw):
@@ -51,7 +53,7 @@ class CaramBar:
         self.termsize = self.get_terminal_size()
         # self.hide_cursor = True
 
-    def set_medium_io(self, medium_io: lineio.LineIO):
+    def set_medium_io(self, medium_io: Optional[lineio.LineIO]):
         self.medium_io = medium_io
         if medium_io is None:
             return

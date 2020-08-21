@@ -4,7 +4,7 @@ import re
 PREFIX = '\033'
 
 
-def prefix_codes(cls):
+def prefix_codes(cls: type) -> type:
     for key, value in vars(cls).items():
         if key.startswith('_'):
             continue
@@ -20,8 +20,11 @@ def prefix_codes(cls):
 class Color:
     @staticmethod
     def reduce(code: str) -> str:
-        codes = re.finditer(PREFIX + r'\[([0-9;]*)m', code)
-        codes = list(m.group(1).strip(';') for m in codes)
+        codes = [
+            m.group(1).strip(';')
+            for m in
+            re.finditer(PREFIX + r'\[([0-9;]*)m', code)
+        ]
         if codes:
             code = ';'.join(codes)
         return code

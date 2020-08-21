@@ -1,7 +1,7 @@
-from typing import Callable
+from typing import Callable, List, Dict, Union
 
 
-LEFT, MIDDLE, RIGHT = '<^>'
+LEFT, MIDDLE, RIGHT = list('<^>')
 ASIS, FIT = 0, '*'
 
 
@@ -16,9 +16,9 @@ class Layout:
 
     def __init__(self, sep: str = ' '):
         self.sep = sep
-        self.fields = []
+        self.fields: List[Dict[str, Union[str, int]]] = []
 
-    def field(self, text: str = None, *, pack: str = ASIS, src: Callable, align: str = LEFT) -> 'Layout':
+    def field(self, text: str = None, *, pack: Union[str, int] = ASIS, src: Callable, align: str = LEFT) -> 'Layout':
         self.fields.append({
             'text': text,
             'pack': pack,
@@ -31,7 +31,6 @@ class Layout:
         size = int(fmt[1:])
         fields = [dict(f) for f in self.fields]
         fit_fields = []
-        tt = []
         remaining_size = size
         for field in fields:
             if field['text'] is not None:
