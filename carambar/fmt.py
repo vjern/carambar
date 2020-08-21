@@ -51,4 +51,4 @@ class Layout:
 
 
 def fmtee(f: Callable) -> Layout:
-    return fmt.Layout().field(pack=ASIS, src=f)
+    return Layout().field(pack=ASIS, src=f)
