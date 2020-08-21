@@ -16,7 +16,7 @@ class Layout:
 
     def __init__(self, sep: str = ' '):
         self.sep = sep
-        self.fields: List[Dict[str, Union[str, int]]] = []
+        self.fields: List[Dict[str, Any]] = []
 
     def field(self, text: str = None, *, pack: Union[str, int] = ASIS, src: Callable, align: str = LEFT) -> 'Layout':
         self.fields.append({
@@ -30,7 +30,7 @@ class Layout:
     def __format__(self, fmt: str) -> str:
         size = int(fmt[1:])
         fields = [dict(f) for f in self.fields]
-        fit_fields = []
+        fit_fields: Dict[str, Any] = []
         remaining_size = size
         for field in fields:
             if field['text'] is not None:

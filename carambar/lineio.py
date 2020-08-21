@@ -29,8 +29,7 @@ class LineIO(io.TextIOBase):
 
     def write(self, text: str):
         text = self.buffer + text
-        text = text.split(self.delimiter)[-self.size:]
-        text = self.delimiter.join(text)
+        text = self.delimiter.join(text.split(self.delimiter)[-self.size:])
         self.buffer = (text)
 
     def flush(self):

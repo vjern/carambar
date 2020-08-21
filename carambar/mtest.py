@@ -27,7 +27,7 @@ def parse_action(action: str) -> Tuple[str, List[str]]:
     single_token_rgx = r'!([a-zA-Z0-9_-]+)'
     multi_token_rgx = r'!\{(.*?)\}'
 
-    keywords = []
+    keywords: List[str] = []
 
     keywords.extend((r.group(1), r.span()[0]) for r in re.finditer(single_token_rgx, action))
     keywords.extend((r.group(1), r.span()[0]) for r in re.finditer(multi_token_rgx, action))
@@ -44,7 +44,7 @@ def parse_action(action: str) -> Tuple[str, List[str]]:
     return text, keywords
 
 
-def prompt(msg: str, ans: str = '') -> str:
+def prompt(msg: str, ans: str = '') -> Optional[str]:
 
     """
     Prints a user prompt. Process the user's answer according to the specified parameters.
