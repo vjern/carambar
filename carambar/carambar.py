@@ -3,8 +3,7 @@ import io
 import os
 import time
 from functools import partial
-from .typing import SupportsFormat, Optional  # does not exist
-# SupportsFormat = object()
+from typing import Any, Optional  # does not exist
 
 from . import termset
 from . import seq
@@ -16,7 +15,7 @@ class CaramBar:
 
     def __init__(
         self,
-        text: SupportsFormat = '===',
+        text: Any = '===',
         file: io.TextIOBase = sys.stderr,
         medium_io: Optional[lineio.LineIO] = None,
         height: int = 1,

@@ -1,5 +1,5 @@
 import io
-from .typing import Optional, Callable
+from typing import Optional, Callable
 
 
 class LineIO(io.TextIOBase):
@@ -13,8 +13,8 @@ class LineIO(io.TextIOBase):
 
     """
 
-    _isatty = False
-    encoding = 'utf-8'
+    _isatty: bool = False
+    encoding: str = 'utf-8'
 
     def __init__(
         self,
@@ -48,4 +48,5 @@ class LineIO(io.TextIOBase):
         return self
 
     def __exit__(self, *a):
-        print('__exit__')
+        # print('__exit__')
+        pass

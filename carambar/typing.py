@@ -75,3 +75,6 @@ if __name__ == "__main__":
     print(o)
     print(SupportsFormat)
     print(SupportsStr)
+
+# if 'typing' in sys.modules:
+#     from typing import *
