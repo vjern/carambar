@@ -56,7 +56,7 @@ class CaramBar:
         self.medium_io = medium_io
         if self.medium_io is None:
             return
-        self.text = medium_io.getvalue()
+        self.text = self.medium_io.getvalue()
         # if self.medium_io is not None:  # Thanks mypy ... Never heard of branches in code ?
         self.medium_io.callback = self.set_text
 

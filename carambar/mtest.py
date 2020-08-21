@@ -23,12 +23,12 @@ def get_default_answer(ans: str) -> Optional[str]:
     return None
 
 
-def parse_action(action: str) -> Tuple[str, List[str]]:
+def parse_action(action: str) -> Tuple[str, Tuple[str, ...]]:
 
     single_token_rgx = r'!([a-zA-Z0-9_-]+)'
     multi_token_rgx = r'!\{(.*?)\}'
 
-    keywords: List[str] = []
+    keywords: Tuple[str, ...] = []
     keyword_occs: List[Tuple[str, int]] = []
 
     keyword_occs.extend((r.group(1), r.span()[0]) for r in re.finditer(single_token_rgx, action))
