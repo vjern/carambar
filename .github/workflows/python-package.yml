@@ -40,6 +40,6 @@ jobs:
         python -m pip install --upgrade mypy
         if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
         python -m mypy carambar
-    - name: Test with pytest
-      run: |
-        pytest
+    # - name: Test with pytest
+    #   run: |
+    #     pytest
