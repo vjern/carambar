@@ -1,4 +1,4 @@
-from typing import Callable, List, Dict, Union
+from typing import Callable, List, Dict, Union, Any
 
 
 LEFT, MIDDLE, RIGHT = list('<^>')
