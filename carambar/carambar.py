@@ -131,7 +131,7 @@ class CaramBar:
         pos = self.termsize.lines, 0
 
         with termset.ancurs(self.file):
-            termset.move_cursor_to(*pos, fio=self.file)
+            termset.move_cursor_to(*pos, file=self.file)
             self.file.write(self.printable_text)
 
         self.file.flush()
